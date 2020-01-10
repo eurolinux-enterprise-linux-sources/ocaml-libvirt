@@ -6,7 +6,7 @@
 
 Name:           ocaml-libvirt
 Version:        0.6.1.0
-Release:        6.2%{?dist}
+Release:        6.4%{?dist}
 Summary:        OCaml binding for libvirt
 
 Group:          Development/Libraries
@@ -16,13 +16,22 @@ Source0:        http://libvirt.org/sources/ocaml/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 ExcludeArch:    sparc64 s390 s390x
 
+# Add support for virDomainGetCPUStats.
+# https://bugzilla.redhat.com/show_bug.cgi?id=760446
+Patch0:         ocaml-libvirt-0.6.1.0-get-cpu-stats.patch
+Patch1:         ocaml-libvirt-0.6.1.0-get-cpu-stats-fix.patch
+BuildRequires:  autoconf
+
 BuildRequires:  ocaml >= 3.10.0
 BuildRequires:  ocaml-ocamldoc
 BuildRequires:  ocaml-findlib-devel
 
-BuildRequires:  libvirt-devel >= 0.2.1
+# 0.9.10-3 contains virDomainGetCPUStats API, but not the qemu driver.
+BuildRequires:  libvirt-devel >= 0.9.10-3
 BuildRequires:  perl
 BuildRequires:  gawk
+
+Requires:       libvirt-client >= 0.9.10-3
 
 %define _use_internal_dependency_generator 0
 %define __find_requires /usr/lib/rpm/ocaml-find-requires.sh
@@ -57,6 +66,11 @@ OCaml virtualization shell.
 
 %prep
 %setup -q
+
+%patch0 -p1
+%patch1 -p1
+autoconf
+autoheader
 
 
 %build
@@ -124,6 +138,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar 23 2012 Richard W.M. Jones <rjones@redhat.com> - 0.6.1.0-6.4
+- Fix support for virDomainGetCPUStats API (thanks Eric Blake)
+  resolves: rhbz#760446
+
+* Tue Mar  6 2012 Richard W.M. Jones <rjones@redhat.com> - 0.6.1.0-6.3
+- Add support for virDomainGetCPUStats API
+  resolves: rhbz#760446
+
 * Mon Jan 11 2010 Richard W.M. Jones <rjones@redhat.com> - 0.6.1.0-6.2
 - Disable mlvirsh for RHEL 6.
 - Rebuild against OCaml 3.11.2.

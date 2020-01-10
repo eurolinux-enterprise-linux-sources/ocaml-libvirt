@@ -1,0 +1,49 @@
+From d011d7a6631693a767058b8274ecad0c5616cb35 Mon Sep 17 00:00:00 2001
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Date: Fri, 23 Mar 2012 12:38:25 +0000
+Subject: [PATCH] Domain.get_cpu_stats: get number of params correctly (thanks
+ Eric Blake).
+
+See:
+https://www.redhat.com/archives/libvir-list/2012-March/msg00306.html
+
+This fixes commit c96c3a119b44d3321dddc5e189dcba991aaff677.
+---
+ libvirt/libvirt_c_oneoffs.c |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/libvirt/libvirt_c_oneoffs.c b/libvirt/libvirt_c_oneoffs.c
+index f827707..3d42b73 100644
+--- a/libvirt/libvirt_c_oneoffs.c
++++ b/libvirt/libvirt_c_oneoffs.c
+@@ -545,7 +545,7 @@ ocaml_libvirt_domain_get_cpu_stats (value domv, value nr_pcpusv)
+   int r, cpu, ncpus, nparams, i, j, pos;
+ 
+   /* get percpu information */
+-  NONBLOCKING (nparams = virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0));
++  NONBLOCKING (nparams = virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0));
+   CHECK_ERROR (nparams < 0, conn, "virDomainGetCPUStats");
+ 
+   if ((params = malloc(sizeof(*params) * nparams * 128)) == NULL)
+@@ -568,7 +568,7 @@ ocaml_libvirt_domain_get_cpu_stats (value domv, value nr_pcpusv)
+         continue;
+       }
+ 
+-      for (j = nparams - 1; j >= 0; j--) {
++      for (j = r - 1; j >= 0; j--) {
+         pos = i * nparams + j;
+           if (params[pos].type == 0)
+             continue;
+@@ -613,6 +613,9 @@ ocaml_libvirt_domain_get_cpu_stats (value domv, value nr_pcpusv)
+           free (params[pos].value.s);
+           break;
+         default:
++            /* XXX Memory leak on this path, if there are more
++             * VIR_TYPED_PARAM_STRING past this point in the array.
++             */
+           free (params);
+           caml_failwith ("virDomainGetCPUStats: "
+                          "unknown parameter type returned");
+-- 
+1.7.9.1
+
