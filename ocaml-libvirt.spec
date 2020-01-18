@@ -1,16 +1,37 @@
 %global opt %(test -x %{_bindir}/ocamlopt && echo 1 || echo 0)
-%global debug_package %{nil}
 
 Name:           ocaml-libvirt
-Version:        0.6.1.2
-Release:        8%{?dist}
+Version:        0.6.1.4
+Release:        15%{?dist}
 Summary:        OCaml binding for libvirt
-
-Group:          Development/Libraries
 License:        LGPLv2+
+
 URL:            http://libvirt.org/ocaml/
 Source0:        http://libvirt.org/sources/ocaml/%{name}-%{version}.tar.gz
-ExcludeArch:    sparc64 s390 s390x
+
+ExcludeArch:    s390 s390x
+
+# Upstream patch to fix int types.
+Patch1:         0001-Use-C99-standard-int64_t-instead-of-OCaml-defined-an.patch
+
+# Upstream patch to add virDomainCreateXML binding.
+Patch2:         0001-Add-a-binding-for-virDomainCreateXML.patch
+
+# Upstream patches to fix error handling.
+Patch3:         0001-Suppress-errors-to-stderr-and-use-thread-local-virEr.patch
+Patch4:         0002-Don-t-bother-checking-return-from-virInitialize.patch
+
+# Upstream patch to remove unused function.
+Patch5:         0001-Remove-unused-not_supported-function.patch
+
+# Upstream patches to tidy up warnings.
+Patch6:         0001-Use-g-warn-error.patch
+Patch7:         0002-Update-dependencies.patch
+
+# Upstream patches to add binding for virConnectGetAllDomainStats.
+Patch8:         0003-Add-a-binding-for-virConnectGetAllDomainStats-RHBZ-1.patch
+Patch9:         0004-examples-Print-more-stats-in-the-get_all_domain_stat.patch
+Patch10:        0005-Change-binding-of-virConnectGetAllDomainStats-to-ret.patch
 
 BuildRequires:  ocaml >= 3.10.0
 BuildRequires:  ocaml-ocamldoc
@@ -20,8 +41,6 @@ BuildRequires:  libvirt-devel >= 0.2.1
 BuildRequires:  perl
 BuildRequires:  gawk
 
-Patch1:         0001-remove-parameter-nr_pcpus-of-Libvirt.Domain.get_cpu_.patch
-
 
 %description
 OCaml binding for libvirt.
@@ -29,7 +48,6 @@ OCaml binding for libvirt.
 
 %package        devel
 Summary:        Development files for %{name}
-Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 
 
@@ -40,15 +58,32 @@ developing applications that use %{name}.
 
 %prep
 %setup -q
+
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
 
 
 %build
 %configure
+# This conditional is due to ocamlc.opt crashing on i686 in the
+# examples/ directory.  Can remove this (ie. revert back to what's
+# in Fedora) when we update RHEL 7 to a newer OCaml version.
+%ifnarch %{ix86}
 make all doc
+%else
+make -C libvirt all
+make doc
+%endif
 %if %opt
 make opt
-strip libvirt/dllmllibvirt.so
 %endif
 
 
@@ -89,6 +124,14 @@ make install-byte
 
 
 %changelog
+* Wed Mar 29 2017 Richard W.M. Jones <rjones@redhat.com> - 0.6.1.4-15
+- Include all changes from Fedora Rawhide
+  resolves: rhbz#1390171
+
+* Fri Aug 08 2014 Richard W.M. Jones <rjones@redhat.com> - 0.6.1.2-10
+- Resolves: rhbz#1125629
+- Disable bytecode build of examples.
+
 * Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.6.1.2-8
 - Mass rebuild 2013-12-27
 
@@ -184,7 +227,7 @@ make install-byte
 * Wed Apr 23 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-2
 - Rebuild for OCaml 3.10.2
 
-* Tue Mar 20 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-1
+* Thu Mar 20 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-1
 - New upstream release 0.4.1.1.
 - Move configure to build section.
 - Pass RPM_OPT_FLAGS.

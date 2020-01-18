@@ -17,7 +17,7 @@
 
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(ocaml-libvirt,0.6.1.2)
+AC_INIT(ocaml-libvirt,0.6.1.4)
 
 dnl Check for basic C environment.
 AC_PROG_CC
@@ -66,71 +66,6 @@ dnl We also use <libvirt/virterror.h>
 AC_CHECK_HEADER([libvirt/virterror.h],
 	[],
 	AC_MSG_ERROR([You must install libvirt development package]))
-
-dnl Check for libvirt >= 0.2.1 (our minimum supported version).
-dnl See: http://libvirt.org/hvsupport.html
-AC_CHECK_FUNC(virConnectGetCapabilities,
-	[],
-	AC_MSG_ERROR([You must have libvirt >= 0.2.1]))
-
-dnl Check for optional libvirt functions added since 0.2.1.
-dnl See: http://libvirt.org/hvsupport.html
-AC_CHECK_FUNCS([virConnectGetHostname \
-		virConnectGetURI \
-		virDomainBlockStats \
-		virDomainGetSchedulerParameters \
-		virDomainGetSchedulerType \
-		virDomainInterfaceStats \
-		virDomainMigrate \
-		virDomainSetSchedulerParameters \
-		virNodeGetFreeMemory \
-		virNodeGetCellsFreeMemory \
-		virStoragePoolGetConnect \
-		virConnectNumOfStoragePools \
-		virConnectListStoragePools \
-		virConnectNumOfDefinedStoragePools \
-		virConnectListDefinedStoragePools \
-		virStoragePoolLookupByName \
-		virStoragePoolLookupByUUID \
-		virStoragePoolLookupByUUIDString \
-		virStoragePoolLookupByVolume \
-		virStoragePoolCreateXML \
-		virStoragePoolDefineXML \
-		virStoragePoolBuild \
-		virStoragePoolUndefine \
-		virStoragePoolCreate \
-		virStoragePoolDestroy \
-		virStoragePoolDelete \
-		virStoragePoolFree \
-		virStoragePoolRefresh \
-		virStoragePoolGetName \
-		virStoragePoolGetUUID \
-		virStoragePoolGetUUIDString \
-		virStoragePoolGetInfo \
-		virStoragePoolGetXMLDesc \
-		virStoragePoolGetAutostart \
-		virStoragePoolSetAutostart \
-		virStoragePoolNumOfVolumes \
-		virStoragePoolListVolumes \
-		virStorageVolLookupByName \
-		virStorageVolLookupByKey \
-		virStorageVolLookupByPath \
-		virStorageVolGetName \
-		virStorageVolGetKey \
-		virStorageVolCreateXML \
-		virStorageVolDelete \
-		virStorageVolFree \
-		virStorageVolGetInfo \
-		virStorageVolGetXMLDesc \
-		virStorageVolGetPath \
-		virDomainBlockPeek \
-		virDomainMemoryPeek \
-                virDomainGetCPUStats \
-])
-
-dnl Check for optional types added since 0.2.1.
-AC_CHECK_TYPES([virStoragePoolPtr, virStorageVolPtr],,,
-	       [#include <libvirt/libvirt.h>])
 
 dnl Check for basic OCaml environment & findlib.
 AC_PROG_OCAML
