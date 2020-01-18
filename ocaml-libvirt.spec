@@ -3,7 +3,7 @@
 
 Name:           ocaml-libvirt
 Version:        0.6.1.2
-Release:        10%{?dist}
+Release:        7%{?dist}
 Summary:        OCaml binding for libvirt
 
 Group:          Development/Libraries
@@ -21,7 +21,6 @@ BuildRequires:  perl
 BuildRequires:  gawk
 
 Patch1:         0001-remove-parameter-nr_pcpus-of-Libvirt.Domain.get_cpu_.patch
-Patch2:         ocaml-libvirt-0.6.1.2-disable-bytecode-examples.patch
 
 
 %description
@@ -42,7 +41,6 @@ developing applications that use %{name}.
 %prep
 %setup -q
 %patch1 -p1
-%patch2 -p1
 
 
 %build
@@ -91,13 +89,6 @@ make install-byte
 
 
 %changelog
-* Fri Aug 08 2014 Richard W.M. Jones <rjones@redhat.com> - 0.6.1.2-10
-- Resolves: rhbz#1125629
-- Disable bytecode build of examples.
-
-* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.6.1.2-8
-- Mass rebuild 2013-12-27
-
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.6.1.2-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
@@ -190,7 +181,7 @@ make install-byte
 * Wed Apr 23 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-2
 - Rebuild for OCaml 3.10.2
 
-* Thu Mar 20 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-1
+* Tue Mar 19 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-1
 - New upstream release 0.4.1.1.
 - Move configure to build section.
 - Pass RPM_OPT_FLAGS.
