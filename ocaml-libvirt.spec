@@ -3,7 +3,7 @@
 
 Name:           ocaml-libvirt
 Version:        0.6.1.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        OCaml binding for libvirt
 
 Group:          Development/Libraries
@@ -89,6 +89,9 @@ make install-byte
 
 
 %changelog
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.6.1.2-8
+- Mass rebuild 2013-12-27
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.6.1.2-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
@@ -181,7 +184,7 @@ make install-byte
 * Wed Apr 23 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-2
 - Rebuild for OCaml 3.10.2
 
-* Tue Mar 19 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-1
+* Tue Mar 20 2008 Richard W.M. Jones <rjones@redhat.com> - 0.4.1.1-1
 - New upstream release 0.4.1.1.
 - Move configure to build section.
 - Pass RPM_OPT_FLAGS.
